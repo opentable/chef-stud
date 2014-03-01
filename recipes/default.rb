@@ -25,7 +25,7 @@ end
 execute "build-stud" do
   user node[:stud][:user]
   cwd "#{node[:stud][:install_prefix_root]}/share/stud"
-  command "make && make install"
+  command "make && sudo make install"
   action :run
 end
 
