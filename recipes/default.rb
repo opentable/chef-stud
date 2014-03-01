@@ -58,6 +58,9 @@ run_flags << "-s" if node[:stud][:options][:send_to_syslog]
 run_flags << "--write-ip" if node[:stud][:options][:write_ip]
 run_flags << "--write-proxy" if node[:stud][:options][:write_proxy]
 
+Chef::Log.info("stud run = " + "stud #{run_flags.join(" ")} #{node[:stud][:pemfile_path]} &")
+#stud --ssl -b 127.0.0.1,8000 -f *,443 -n 1 -B 100 /etc/ssl/certs/guestcenter.opentable.com.pem &
+
 # Kill existing processes
 execute "stop-stud" do
   user node[:stud][:user]
