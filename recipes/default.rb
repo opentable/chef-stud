@@ -7,6 +7,7 @@
 # MIT Licensed, or any other license you want
 #
 
+include_recipe "runit"
 include_recipe "build-essential"
 
 package "openssl"
@@ -61,16 +62,33 @@ run_flags << "--write-proxy" if node[:stud][:options][:write_proxy]
 Chef::Log.info("stud run = " + "stud #{run_flags.join(" ")} #{node[:stud][:pemfile_path]} &")
 #stud --ssl -b 127.0.0.1,8000 -f *,443 -n 1 -B 100 /etc/ssl/certs/guestcenter.opentable.com.pem &
 
-# Kill existing processes
+
+#Kill existing processes
 execute "stop-stud" do
   user node[:stud][:user]
   command "killall stud || echo 'Warning: no processes to kill'"
   action :run
 end
 
-# Start the process
-execute "start-stud" do
-  user node[:stud][:user]
-  command "stud #{run_flags.join(" ")} #{node[:stud][:pemfile_path]} &"
-  action :run
+
+runit_service "stud" do
+  options({
+    :command => "#{run_flags.join(" ")} #{node[:stud][:pemfile_path]}"
+    }.merge(params)
+  )
 end
+
+
+# Kill existing processes
+#execute "stop-stud" do
+#  user node[:stud][:user]
+#  command "killall stud || echo 'Warning: no processes to kill'"
+#  action :run
+#  end
+
+# Start the process
+#execute "start-stud" do
+#  user node[:stud][:user]
+#  command "stud #{run_flags.join(" ")} #{node[:stud][:pemfile_path]} &"
+#  action :run
+#end
